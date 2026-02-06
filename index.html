@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Valentine</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: pink;
+      font-family: Arial, sans-serif;
+    }
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 10px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+    }
+    #yes { background: hotpink; color: white; }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <h1>Maryem, will you be my Valentine? 💖</h1>
+    <button id="yes">Yes</button>
+    <button>No</button>
+  </div>
+
+  <script>
+    document.getElementById("yes").onclick = () => {
+      confetti();
+      alert("Yay ❤️");
+    };
+  </script>
+</body>
+</html>
