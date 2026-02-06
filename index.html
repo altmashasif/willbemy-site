@@ -2,97 +2,169 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Will you be my Valentine?</title>
 
+  <!-- Confetti library -->
   <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
+    :root {
+      --bg1: #ffd6e7;
+      --bg2: #ffeef6;
+      --card: #ffffffcc;
+      --yes: #ff3b7a;
+      --yesHover: #ff1f68;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100svh;
       display: grid;
       place-items: center;
-      background: radial-gradient(circle, #ffeef6, #ffd6e7);
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
       font-family: system-ui, sans-serif;
+      overflow: hidden;
+      padding: 16px;
+    }
+
+    /* FULL-SCREEN CONFETTI CANVAS */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
     }
 
     .card {
-      background: white;
-      padding: 30px;
+      width: min(720px, 92vw);
+      padding: 26px 22px;
+      background: var(--card);
+      backdrop-filter: blur(10px);
       border-radius: 22px;
       text-align: center;
       box-shadow: 0 18px 60px rgba(0,0,0,.15);
-      max-width: 420px;
-      width: 92%;
+    }
+
+    /* PHOTO STYLING */
+    .photo {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.2);
+      border: 4px solid #ff3b7a;
     }
 
     h1 {
-      font-size: 26px;
-      margin-bottom: 22px;
+      font-size: clamp(26px, 4vw, 44px);
+      margin: 12px 0 18px;
     }
 
-    .buttons {
+    .button-zone {
       position: relative;
-      height: 120px;
+      width: min(520px, 92%);
+      height: 150px;
+      margin: 0 auto;
+      touch-action: none;
     }
 
     button {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      padding: 14px 26px;
+      padding: 16px 24px;
       font-size: 18px;
+      font-weight: 800;
       border-radius: 999px;
       border: none;
       cursor: pointer;
-      font-weight: 700;
+      box-shadow: 0 10px 24px rgba(0,0,0,.14);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .12s ease, background .12s ease;
     }
 
-    #yes {
-      left: 15%;
-      background: #ff3b7a;
-      color: white;
+    #yesBtn {
+      left: 18%;
+      background: var(--yes);
+      color: #fff;
     }
 
-    #no {
-      left: 60%;
+    #yesBtn:hover { background: var(--yesHover); }
+
+    #noBtn {
+      left: 62%;
       background: #e5e7eb;
+      color: #111827;
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+      animation: pop .35s ease;
+    }
+
+    .result h2 {
+      font-size: clamp(30px, 4.5vw, 46px);
+      margin: 10px 0;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
-
 <body>
-  <div class="card">
-    <h1>Maryem, will you be my Valentine? 💖</h1>
 
-    <div class="buttons" id="zone">
-      <button id="yes">Yes</button>
-      <button id="no">No</button>
+  <canvas id="confettiCanvas"></canvas>
+
+  <main class="card">
+    <!-- ADD PHOTO HERE -->
+    <img src="maryem.jpg" alt="Maryem" class="photo">
+
+    <h1>Will you be my Valentine?</h1>
+
+    <div class="button-zone">
+      <button id="yesBtn">Yes 💖</button>
+      <button id="noBtn">No 😢</button>
     </div>
-  </div>
+
+    <div class="result" id="result">
+      <h2>Yay! 💕</h2>
+    </div>
+  </main>
 
   <script>
-    const yes = document.getElementById("yes");
-    const no = document.getElementById("no");
-    const zone = document.getElementById("zone");
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const result = document.getElementById('result');
+    const confettiCanvas = document.getElementById('confettiCanvas');
 
-    yes.onclick = () => {
-      confetti({ particleCount: 250, spread: 120 });
-      setTimeout(() => alert("YAYYY ❤️"), 200);
-    };
+    // YES BUTTON CLICK
+    yesBtn.addEventListener('click', () => {
+      result.style.display = 'block';
+      confetti.create(confettiCanvas, { resize: true, useWorker: true })({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    });
 
-    zone.addEventListener("mousemove", e => {
-      const b = no.getBoundingClientRect();
-      const d = Math.hypot(
-        (b.left + b.width / 2) - e.clientX,
-        (b.top + b.height / 2) - e.clientY
-      );
-      if (d < 120) {
-        no.style.left = Math.random() * (zone.clientWidth - b.width) + "px";
-        no.style.top = Math.random() * (zone.clientHeight - b.height) + "px";
-      }
+    // NO BUTTON MOVES AWAY
+    noBtn.addEventListener('mouseenter', () => {
+      const x = Math.random() * 60 + 20; // new left %
+      const y = Math.random() * 30 + 35; // new top %
+      noBtn.style.left = x + '%';
+      noBtn.style.top = y + '%';
     });
   </script>
+
 </body>
 </html>
